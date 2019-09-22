@@ -55,6 +55,7 @@ class HhruSpider(scrapy.Spider):
         max_salary = self.get_max_salary(salary)
         min_salary = self.clean_min_salary_text(min_salary)
         max_salary = self.clean_max_salary_text(max_salary)
+        url = response.request.url
         yield JobparserItem(name=name, min_salary=min_salary,
-                            max_salary=max_salary)  # Передаем сформированный item в pipeline
+                            max_salary=max_salary, url=url)  # Передаем сформированный item в pipeline
 
