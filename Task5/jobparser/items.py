@@ -15,3 +15,4 @@ class JobparserItem(scrapy.Item):
     min_salary = scrapy.Field()
     max_salary = scrapy.Field()
     url = scrapy.Field()
+    source = scrapy.Field()
