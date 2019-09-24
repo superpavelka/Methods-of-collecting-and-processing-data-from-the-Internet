@@ -4,6 +4,7 @@ from scrapy.http import HtmlResponse
 from jobparser.items import JobparserItem
 import re
 
+
 class HhruSpider(scrapy.Spider):
     name = 'hhru'
     allowed_domains = ['hh.ru']
@@ -56,6 +57,6 @@ class HhruSpider(scrapy.Spider):
         min_salary = self.clean_min_salary_text(min_salary)
         max_salary = self.clean_max_salary_text(max_salary)
         url = response.request.url
+        source = 'hh.ru'
         yield JobparserItem(name=name, min_salary=min_salary,
-                            max_salary=max_salary, url=url)  # Передаем сформированный item в pipeline
-
+                            max_salary=max_salary, url=url, source=source)  # Передаем сформированный item в pipeline
