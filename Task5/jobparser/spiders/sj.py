@@ -26,18 +26,7 @@ class SjSpider(scrapy.Spider):
     def vacansy_parse(self, response: HtmlResponse):
         name = response.css('h1.rFbjy::text').extract_first()  # Наименование вакансии
         salary = response.css('span._2Wp8I').extract_first()  # Зарплата
-        salary = re.findall('<span>[0-9]+\s[0-9]+', salary)
-        if (len(salary) > 0):
-            min_salary = re.sub('\xa0', "", salary[0])
-            min_salary = re.sub('<span>', '', min_salary)
-        else:
-            min_salary = '0'
-        if (len(salary) > 1):
-            max_salary = re.sub('\xa0', "", salary[1])
-            max_salary = re.sub('<span>', '', max_salary)
-        else:
-            max_salary = min_salary
         url = response.request.url
         source = 'superjob.ru'
-        yield JobparserItem(name=name, min_salary=min_salary, max_salary=max_salary, url=url,
+        yield JobparserItem(name=name, min_salary=salary, max_salary=salary, url=url,
                             source=source)  # Передаем сформированный item в pipeline
