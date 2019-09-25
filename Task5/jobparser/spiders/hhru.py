@@ -10,34 +10,6 @@ class HhruSpider(scrapy.Spider):
     allowed_domains = ['hh.ru']
     start_urls = ['https://hh.ru/search/vacancy?text=pilot&area=113&st=searchVacancy']
 
-    def get_min_salary(self, salary):
-        sal_min_1 = re.compile('от [0-9]+')
-        # создаем список нижней границы зарплат
-        if re.findall(sal_min_1, salary):
-            min_salary = re.findall(sal_min_1, salary)
-        else:
-            min_salary = ''
-        return min_salary
-
-    def get_max_salary(self, salary):
-        sal_max_1 = re.compile('до [0-9]+')
-        # создаем список верхней границы зарплат
-        if re.findall(sal_max_1, salary):
-            max_salary = re.findall(sal_max_1, salary)
-        else:
-            max_salary = ''
-        return max_salary
-
-    def clean_min_salary_text(self, salary):
-        # чистим список нижней границы от ненужных символов
-        min_salary = re.sub('от ', "", str(salary))
-        return min_salary
-
-    def clean_max_salary_text(self, salary):
-        # чистим список верхней границы от ненужных символов
-        max_salary = re.sub('до ', "", str(salary))
-        return max_salary
-
     def parse(self, response: HtmlResponse):  # Метод парсинга - точка входа для паука
         next_page = response.css('a.HH-Pager-Controls-Next::attr(href)').extract_first()  # Ссылка у кнопки "Далее"
         yield response.follow(next_page, callback=self.parse)  # Переход на следующую страницу и вызов самой себя
@@ -50,13 +22,7 @@ class HhruSpider(scrapy.Spider):
     def vacansy_parse(self, response: HtmlResponse):
         name = response.css('div.vacancy-title h1.header::text').extract_first()  # Наименование вакансии
         salary = response.css('div.vacancy-title p.vacancy-salary::text').extract_first()  # Зарплата
-        # создаем список элементов с информациям по зарплатам
-        salary = re.sub('\xa0', "", salary)
-        min_salary = self.get_min_salary(salary)
-        max_salary = self.get_max_salary(salary)
-        min_salary = self.clean_min_salary_text(min_salary)
-        max_salary = self.clean_max_salary_text(max_salary)
         url = response.request.url
         source = 'hh.ru'
-        yield JobparserItem(name=name, min_salary=min_salary,
-                            max_salary=max_salary, url=url, source=source)  # Передаем сформированный item в pipeline
+        yield JobparserItem(name=name, min_salary=salary,
+                            max_salary=salary, url=url, source=source)  # Передаем сформированный item в pipeline
